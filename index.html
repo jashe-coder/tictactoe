@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div
+            class="flex justify-center items-center h-screen bg-[url('https://w.wallhaven.cc/full/eo/wallhaven-eovx8k.png')] bg-no-repeat bg-cover bg-center">
+            <div class="flex flex-col items-center">
+                <button @click="restartGame()"
+                    class="bg-rose-400 text-white px-5 py-2 m-5 rounded-xl cursor-pointer hover:bg-rose-500">Restart</button>
+                <div class="grid grid-cols-3 bg-amber-500 p-3 rounded-xl">
+                    <div v-for="(row, rowIndex) in boardCells" :key="rowIndex">
+                        <div v-for="(cell, colIndex) in row" :key="colIndex"
+                            class="w-20 h-20 m-4 bg-amber-200 rounded-lg cursor-pointer"
+                            @click="cellClicked(rowIndex, colIndex)" :class="{'text-red-500 text-center py-6 text-2xl font-bold': cell === 'X',
+                             'text-blue-500 text-center py-6 text-2xl font-bold': cell === 'O'}">
+                            {{cell}}
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="mt-10">
+                    <p v-if="message" class="text-center bg-white text-amber-500 font-semibold py-3 w-50 ">{{message}}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    board: "",
+                    message: "",
+                    boardCells: [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                    ],
+
+
+                    message: "Player X turn",
+                    currentPlayer: "X",
+                    winner: null
+
+                }
+            },
+
+            methods: {
+
+               cellClicked(row, col) {
+            if (this.boardCells[row][col] === "") {
+                this.boardCells[row][col] = this.currentPlayer;
+                
+                if (this.isWinner(this.currentPlayer)) {
+                    this.message = `Player ${this.currentPlayer} win! `;
+                } else if (this.isDraw(this.currentPlayer)) {
+                    this.message = 'Draw'
+                } else {
+                    if (this.currentPlayer === 'X') {
+                        this.currentPlayer = 'O';
+                        this.message = "Player O's turn"
+                    } else {
+                        this.currentPlayer = 'X';
+                        this.message = "Player X's turn"
+                    }
+                }
+            }
+        },
+
+
+                isWinner(user) {
+                    for (let row = 0; row < this.boardCells.length; row++) {
+                        if (this.boardCells[row][0] == user
+                            && this.boardCells[row][1] == user
+                            && this.boardCells[row][2] == user) {
+                            return true;
+                        }
+
+                    }
+
+                    for (let col = 0; col < this.boardCells.length; col++) {
+                        if (this.boardCells[0][col] == user
+                            && this.boardCells[1][col] == user
+                            && this.boardCells[2][col] == user) {
+                            return true;
+                        }
+
+                    }
+
+                    // diagonal
+                    if (this.boardCells[0][0] == user
+                        && this.boardCells[1][1] == user
+                        && this.boardCells[2][2] == user) {
+                        return true;
+                    }
+
+                    if (this.boardCells[0][2] == user
+                        && this.boardCells[1][1] == user
+                        && this.boardCells[2][0] == user) {
+                        return true;
+                    }
+                    return false;
+                },
+
+               
+
+                restartGame() {
+                    this.boardCells = [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                    ];
+                    this.message = "Player X's turn"
+
+                },
+
+                 isDraw() {
+                    for (let row = 0; row < this.boardCells.length; row++) {
+                        for (let col = 0; col < this.boardCells.length; col++) {
+                            if (this.boardCells[row][col] === '') {
+                                return false;
+                            }
+                        }
+                    }
+                    return !this.isWinner('X') && !this.isWinner('O');
+                }
+            }
+
+        }).mount('#app');
+
+    </script>
+
+</body>
+
+</html>
